@@ -374,7 +374,7 @@ h1 {
 
 .search-box input {
   width: 100%;
-  padding: 12px 50px 12px 20px;
+  padding: 12px 40px 12px 20px;
   border: 2px solid #ddd;
   border-radius: 30px;
   font-size: 1rem;
@@ -389,7 +389,7 @@ h1 {
 
 .search-box i {
   position: absolute;
-  right: 15px;
+  right: -50px;
   top: 50%;
   transform: translateY(-50%);
   color: #777;

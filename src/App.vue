@@ -1,12 +1,4 @@
 <script>
-/*
-import byStudio from "@/components/byStudio.vue"
-
-export default {
-  components: {
-    byStudio: byStudio
-  }
-}*/
 </script>
 
 <template>
