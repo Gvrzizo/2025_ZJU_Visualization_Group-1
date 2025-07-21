@@ -1,20 +1,10 @@
 <template>
-<div>
-  <div v-if = "$route.meta.showNav !== false">
-  <router-link to ="/studio"><h1>（仮）根据工作室分析</h1></router-link>
-  </div>
-  <router-view />
-</div>
   <div>
-  <div v-if = "$route.meta.showNav !== false">
-  <router-link to ="/rank"><h1>动画列表</h1></router-link>
-  </div>
-  <router-view />
+    <div v-if="$route.meta.showNav !== false">
+      <router-link to="/studio"><h1>（仮）根据工作室分析</h1></router-link>
+      <router-link to="/rank"><h1>动画列表</h1></router-link>
+    </div>
+    
+    <router-view />
   </div>
 </template>
-
-<script>
-</script>
-
-<style scoped>
-</style>
