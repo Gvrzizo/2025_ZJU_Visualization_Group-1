@@ -5,7 +5,7 @@
             <button @click="pagesdown" :disabled="pages==1">上一页</button>
             当前页码：<input type="number" v-model="npages" placeholder="请输入页码">
             <button @click="gotopage(npages)">跳转</button>
-            <button @click="pagesup" :disabled="pages==577">下一页</button>
+            <button @click="pagesup" :disabled="pages==552">下一页</button>
         </div>
         <div class="sortchange">
             <button @click="sortbyscore">评分最高</button>
@@ -74,8 +74,8 @@
         if (targetpage<1){
             pages.value=1;npages.value=1;
         }
-        else if (targetpage>577){
-            pages.value=577;npages.value=577;
+        else if (targetpage>552){
+            pages.value=552;npages.value=552;
         }
         else pages.value=targetpage;
     }
