@@ -77,19 +77,25 @@
         else if (targetpage>552){
             pages.value=552;npages.value=552;
         }
-        else pages.value=targetpage;
+        else {
+            pages.value=targetpage;
+            npages.value=targetpage;
+        }
     }
     function sortbyscore(){
         animeData.value.sort((a,b) => b.score-a.score)
         pages.value=1;
+        npages.value=1;
     }
     function sortbytime(){
         animeData.value.sort((a,b) => b.aired_from.localeCompare(a.aired_from))
         pages.value=1;
+        npages.value=1;
     }
     function sortbypopularity(){
         animeData.value.sort((a,b) => b.scored_by-a.scored_by)
         pages.value=1;
+        npages.value=1;
     }
     function check(index){
         visi.value=true;
