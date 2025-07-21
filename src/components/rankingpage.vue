@@ -21,7 +21,7 @@
                 <th>score</th>
                 <th></th>
             </tr>
-            <tr v-for="(data,index) in animeData.slice((pages-1)*50,pages*50-1)">
+            <tr v-for="(data,index) in animeData.slice((pages-1)*50,pages*50)">
                 <td>{{ index+(pages-1)*50+1 }}</td>
                 <td>{{ data.id }}</td>
                 <td>{{ data.name }}</td>
