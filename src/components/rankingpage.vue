@@ -55,7 +55,7 @@
     </div>
 </template>
 <script setup>
-    import localData from '@/anime_data.json'
+    import localData from '@/assets/anime_data.json'
     import {ref,computed} from 'vue'
     let animeData=ref(localData)
     let pages=ref(1)

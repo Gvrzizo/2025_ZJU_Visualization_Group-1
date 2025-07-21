@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import byStudio from '@/components/byStudio.vue'
 import Rankingpage from '@/components/rankingpage.vue';
-
+import LineChart from '@/components/line_chart.vue'
 const routes = [
   {
     path: '/studio',
@@ -17,6 +17,14 @@ const routes = [
     component: Rankingpage,
     meta: {
       showNav: false
+    }
+  },
+  {
+    path: '/line_chart',
+    name: 'LineChart',
+    component: LineChart,
+    meta: {
+      showlinechart: false
     }
   }
 ];
