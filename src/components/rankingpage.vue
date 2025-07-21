@@ -64,11 +64,11 @@
     let number=ref(0)
     function pagesdown(){
         pages.value--;
-        npages.value--;
+        npages.value=pages.value;
     }
     function pagesup(){
-        npages.value++;
         pages.value++;
+        npages.value=pages.value;
     }
     function gotopage(targetpage){
         if (targetpage<1){
@@ -106,72 +106,217 @@
     }
 </script>
 <style scoped>
-    button.goback{
-        position: fixed;
-        left: 2%;
+    .lists, .container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        color: #333333;
     }
-    div.pageschange{
+    h1 {
         text-align: center;
-    }
-    div.sortchange{
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 2.2rem;
         position: relative;
-        left: 74%;
     }
-    h1{
+    h1::after {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, #42b883, #35495e);
+        margin: 10px auto;
+        border-radius: 2px;
+    }
+    .pageschange {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .pageschange input {
+        width: 80px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
         text-align: center;
-        font-size: 300%;
-        font-family: 仿宋;
+        font-size: 1rem;
+        transition: border-color 0.3s;
     }
-    table{
-        width: 70%;
-        margin:auto;
-        margin-bottom: 5%;
+    .pageschange input:focus {
+        border-color: #42b883;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(66, 184, 131, 0.2);
+    }
+    .sortchange {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 25px 0;
+        flex-wrap: wrap;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #42b883;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    button:hover:not(:disabled) {
+        background-color: #359268;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    button:active:not(:disabled) {
+        transform: translateY(0);
+    }
+    button:disabled {
+        background-color: #a0a0a0;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+    .sortchange button {
+        background-color: #35495e;
+    }
+    .sortchange button:hover {
+        background-color: #2c3e50;
+    }
+    table {
+        width: 100%;
         border-collapse: collapse;
+        margin-top: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border-radius: 8px;
+        overflow: hidden;
     }
-    table,th,td{
-        border: 1px solid gray;
+    th, td {
+        padding: 15px 10px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
     }
-    th{
-        background-color: darkgray;
+    th {
+        background-color: #35495e;
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
     }
-    th:nth-child(1){ width: 5%;}
-    th:nth-child(2){ width: 5%;}
-    th:nth-child(3){ width:70%;}
-    th:nth-child(4){ width:8%;}
-    th:nth-child(5){ width:6%;}
-    td{
-        background-color: azure;
+    tr:nth-child(even) {
+        background-color: #f8f9fa;
     }
-    div.container{
-        position: absolute;
-        width:80%;
+    tr:hover {
+        background-color: #edf7f2;
+        transition: background-color 0.2s;
+    }
+    .goback {
+        margin: 20px;
+        background-color: #e74c3c;
+    }
+    .goback:hover {
+        background-color: #c0392b;
+    }
+    .container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 30px;
+        margin-top: 20px;
+    }
+    .row {
         display: flex;
-        flex-direction: column;
-        top:10%;
-        left:10%;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-bottom: 30px;
     }
-    .row{
-        display: flex;
-        gap:20px;
+    img {
+        flex: 1;
+        min-width: 300px;
+        max-height: 450px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .details {
+        flex: 2;
+        min-width: 300px;
+    }
+    .details h2 {
+        color: #2c3e50;
+        margin-top: 0;
+        font-size: 1.8rem;
+        border-bottom: 2px solid #42b883;
+        padding-bottom: 10px;
         margin-bottom: 20px;
     }
-    .details{
-        width:60%;
-        border: 2px solid gray;
-        padding: 2%;
-        text-align: left;
+    .details p {
+        margin: 12px 0;
+        line-height: 1.6;
+    } 
+    .details b {
+        color: #35495e;
+        width: 100px;
+        display: inline-block;
     }
-    .synposis{
-        flex:1;
-        width:90%;
-        padding: 2%;
-        border: 1px solid gray;
-        border-radius: 15px;
-    }
-    img{
-        width:300px;
-        height: auto;
-        float:left;
+    .synposis {
+        background-color: #f8f9fa;
         padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #42b883;
+    }
+    .synposis b {
+        color: #35495e;
+    }
+    .synposis p {
+        line-height: 1.7;
+        margin: 0;
+    }
+    @media (max-width: 768px) {
+        .pageschange {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .pageschange input {
+            width: 100%;
+            margin: 10px 0;
+        }
+        table {
+            font-size: 0.85rem;
+        }
+        th, td {
+            padding: 10px 8px;
+        }
+        .row {
+            flex-direction: column;
+        }
+        img {
+            width: 100%;
+            max-height: 400px;
+        }
+    }
+    @media (max-width: 480px) {
+        .sortchange {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .sortchange button {
+            width: 100%;
+        }
+        th, td {
+            padding: 8px 5px;
+            font-size: 0.8rem;
+        }
     }
 </style>
