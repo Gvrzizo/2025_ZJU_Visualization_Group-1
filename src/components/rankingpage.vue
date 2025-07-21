@@ -5,7 +5,7 @@
             <button @click="pagesdown" :disabled="pages==1">上一页</button>
             当前页码：<input type="number" v-model="npages" placeholder="请输入页码">
             <button @click="gotopage(npages)">跳转</button>
-            <button @click="pagesup" :disabled="pages==577">下一页</button>
+            <button @click="pagesup" :disabled="pages==552">下一页</button>
         </div>
         <div class="sortchange">
             <button @click="sortbyscore">评分最高</button>
@@ -21,7 +21,7 @@
                 <th>score</th>
                 <th></th>
             </tr>
-            <tr v-for="(data,index) in animeData.slice((pages-1)*50,pages*50-1)">
+            <tr v-for="(data,index) in animeData.slice((pages-1)*50,pages*50)">
                 <td>{{ index+(pages-1)*50+1 }}</td>
                 <td>{{ data.id }}</td>
                 <td>{{ data.name }}</td>
@@ -74,22 +74,28 @@
         if (targetpage<1){
             pages.value=1;npages.value=1;
         }
-        else if (targetpage>577){
-            pages.value=577;npages.value=577;
+        else if (targetpage>552){
+            pages.value=552;npages.value=552;
         }
-        else pages.value=targetpage;
+        else {
+            pages.value=targetpage;
+            npages.value=targetpage;
+        }
     }
     function sortbyscore(){
         animeData.value.sort((a,b) => b.score-a.score)
         pages.value=1;
+        npages.value=1;
     }
     function sortbytime(){
         animeData.value.sort((a,b) => b.aired_from.localeCompare(a.aired_from))
         pages.value=1;
+        npages.value=1;
     }
     function sortbypopularity(){
         animeData.value.sort((a,b) => b.scored_by-a.scored_by)
         pages.value=1;
+        npages.value=1;
     }
     function check(index){
         visi.value=true;
