@@ -250,7 +250,7 @@ export default {
   </div>
 </template>
 
-<style>
+<style scoped>
 
 #studioBody {
   margin: 0;

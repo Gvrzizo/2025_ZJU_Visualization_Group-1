@@ -104,7 +104,7 @@
         visi.value=false;
     }
 </script>
-<style>
+<style scoped>
     button.goback{
         position: fixed;
         left: 2%;
