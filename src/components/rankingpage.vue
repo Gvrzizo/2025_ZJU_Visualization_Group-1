@@ -1,6 +1,5 @@
 <template>
     <div v-if="!visi" class="lists">
-        <button @click="changevisible" class="goback">返回主页</button>
         <h1>动画列表</h1>
         <div class="pageschange">
             <button @click="pagesdown" :disabled="pages==1">上一页</button>
@@ -56,7 +55,6 @@
     </div>
 </template>
 <script setup>
-    import {sharedState} from './sharedvis.js'
     import localData from '@/anime_data.json'
     import {ref,computed} from 'vue'
     let animeData=ref(localData)
@@ -64,9 +62,6 @@
     let npages=ref(1)
     let visi=ref(false)
     let number=ref(0)
-    function changevisible(){
-        sharedState.vis=!sharedState.vis;
-    }
     function pagesdown(){
         pages.value--;
         npages.value--;
