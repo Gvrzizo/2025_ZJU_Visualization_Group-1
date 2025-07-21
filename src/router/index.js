@@ -16,7 +16,7 @@ const routes = [
     name: 'rankingpage',
     component: Rankingpage,
     meta: {
-      showNav: false
+      showrank: false
     }
   },
   {

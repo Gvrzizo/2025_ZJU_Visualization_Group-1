@@ -11,7 +11,7 @@
             :key="genre"
             class="genre-chip"
             :class="{ active: selectedGenres.includes(genre) }"
-            :style="{ backgroundColor: genreColors[genre] }"
+            :style="getGenreStyle(genre)"
             @click="toggleGenre(genre)"
           >
             {{ genre }}
@@ -109,6 +109,7 @@ export default {
     };
     
     const selectedGenres = ref([...genres]);
+    const activeGenre = ref({});
     const startYear = ref(2000);
     const endYear = ref(2025);
     
@@ -406,6 +407,10 @@ export default {
       countChartInstance.setOption(countOption);
     };
     
+    genres.forEach(genre=>{
+      activeGenre.value[genre] = false;
+    })
+
     // 切换题材选择
     const toggleGenre = (genre) => {
       const index = selectedGenres.value.indexOf(genre);
@@ -414,9 +419,26 @@ export default {
       } else {
         selectedGenres.value.push(genre);
       }
+      activeGenre.value[genre] = !activeGenre.value[genre];
       renderCharts();
     };
     
+    const getGenreStyle = (genre) => {
+      if (activeGenre.value[genre]) {
+        // 如果当前题材被激活
+        return {
+          backgroundColor: 'white', // 背景颜色为白色
+          color: genreColors[genre] // 字体颜色为对应的 genreColors[genre]
+        };
+      } else {
+        // 默认样式
+        return {
+          backgroundColor: genreColors[genre], // 背景颜色为对应的 genreColors[genre]
+          color: 'white' // 字体颜色为白色
+        };
+      }
+    }
+
     // 更新图表
     const updateCharts = () => {
       if (startYear.value > endYear.value) {
@@ -434,12 +456,11 @@ export default {
       });
     });
     
-    
-
     return {
       genres,
       genreColors,
       selectedGenres,
+      activeGenre,
       startYear,
       endYear,
       avgChart,
@@ -448,8 +469,10 @@ export default {
       highestCount,
       popularGenre,
       toggleGenre,
+      getGenreStyle,
       updateCharts
     };
+
   }
 };
 </script>
@@ -462,8 +485,6 @@ export default {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
-
 @keyframes gradientBG {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -474,13 +495,13 @@ export default {
   max-width: 1600px;
   margin: 0 auto;
   padding: 20px;
-  background: linear-gradient(135deg, #8A2387, #E94057, #4d16ac);
+  background: linear-gradient(135deg, #8A2387, #E94057, #8b00c7, #b20157);
   color: #fff;
   line-height: 1.6;
   min-height: 100vh;
   padding: 20px;
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
+  background-size: 800% 800%;
+  animation: gradientBG 8s ease infinite;
 }
 
 h1 {
@@ -543,7 +564,7 @@ h1:after {
 }
 
 .controls {
-  background: white;
+  background: rgba(255, 255, 255, 0.928);
   border-radius: 10px;
   padding: 25px;
   margin-bottom: 30px;
@@ -575,7 +596,6 @@ h1:after {
   border-radius: 20px;
   cursor: pointer;
   font-weight: 500;
-  color: white;
   transition: all 0.3s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
