@@ -1,5 +1,6 @@
 <script>
 import studiosData from "@/assets/studioData.json"
+import localizationData from "@/assets/localization.json"
 import L from "leaflet"
 import "vue"
 export default {
@@ -46,6 +47,11 @@ export default {
           }
           
           return result;
+        },
+        localValue() {
+          return (name) => {
+            return localizationData.find(item => item.name === name).local;
+          };
         }
       },
       watch: {
@@ -217,7 +223,7 @@ export default {
                 </div>
                 <div class="works-list">
                   <div class="work-item" v-for="(work, index) in selectedStudio.repre.slice(0, 3)" :key="index">
-                    {{ work }}
+                    {{ localValue(work) }}
                   </div>
                 </div>
               </div>
