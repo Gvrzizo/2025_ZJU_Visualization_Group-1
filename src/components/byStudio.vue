@@ -2,10 +2,14 @@
 import studiosData from "@/assets/studioData.json"
 import localizationData from "@/assets/localization.json"
 import L from "leaflet"
+import { Tippy } from "vue-tippy"
+import * as echarts from 'echarts';
 import "vue"
 export default {
+      components: [Tippy],
       data() { return {
           map: null,
+          graph: null,
           markers: [],
           studios: studiosData,
           selectedStudio: null,
@@ -60,11 +64,20 @@ export default {
           this.map.remove();
           this.initMap();
           this.updateMapMarkers();
+        },
+        selectedStudio() {
+          this.$nextTick(() => {
+            this.initGraph();
+            this.setGraph();
+          })
         }
       },
       beforeDestroy() {
         if (this.map) {
           this.map.remove();
+        }
+        if (this.graph) {
+          this.graph.dispose();
         }
       },
       mounted() {
@@ -72,6 +85,44 @@ export default {
         this.addMarkers();
       },
       methods: {
+        initGraph() {
+          this.graph = echarts.init(document.getElementById("graph-radar"));
+        },
+        setGraph() {
+          this.graph.setOption({
+            title: {
+              text: `${this.selectedStudio.studio}类别实力雷达图`
+            },
+            tooltip: {},
+            legend: {},
+            radar: {
+              //shape: 'circle',
+              indicator: [
+                { name: '冒险', max: 10 },
+                { name: '喜剧', max: 10 },
+                { name: '幻想', max: 10 },
+                { name: '动作', max: 10 },
+                { name: '日常', max: 10 },
+                { name: '悬疑', max: 10 },
+                { name: '恋爱', max: 10 }
+              ]
+            },
+            series: [
+              {
+                name: '',
+                type: 'radar',
+                data: [
+                  {
+                    value: [this.selectedStudio.Adventure, this.selectedStudio.Comedy, this.selectedStudio.Fantasy,
+                            this.selectedStudio.Action, this.selectedStudio["Slice of Life"], this.selectedStudio.Suspense,
+                            this.selectedStudio.Romance],
+                    name: ''
+                  }
+                ]
+              }
+            ]
+          });
+        },
         initMap() {
           // 初始化地图，设置视图到世界范围
           this.map = L.map('map').setView([30, 0], 2);
@@ -207,6 +258,14 @@ export default {
                   </div>
                 </div>
               </div>
+
+              <div class="info-section">
+                <div class="info-title">
+                  <i class="fas fa-bullseye"></i>
+                  类别实力雷达图
+                </div>
+                <div id = "graph-radar"></div>
+              </div>
               
               <div class="info-section">
                 <div class="info-title">
@@ -242,9 +301,28 @@ export default {
                     <div class="stat-value">{{ selectedStudio.cnt }}</div>
                     <div class="stat-label">作品总数</div>
                   </div>
+                  <div class="stat-item">
+                    <div class="stat-value">{{ selectedStudio.S.toFixed(2) }}</div>
+                    <div class="stat-label">工作室综合实力</div>
+                      <tippy content = "计算使用到的公式:<br>
+                        S = (V * μ + M * C) / (V + M) <br>
+                        其中:<br>
+                        - S : 工作室实力评分。<br>
+                        - V : 该工作室所有动画的评分人数总和。<br>
+                        - μ : 该工作室所有动画的加权平均评分。<br>
+                        - C : 整个数据集中所有动画的平均评分。<br>
+                        - M : 所有工作室的V值的平均值。<br>
+                        指标具有一定局限性，仅供参考。">
+                        <i class="fas fa-info-circle"></i>
+                      </tippy>
+                  </div>
                 </div>
               </div>
+
+              
+
             </div>
+
           </div>
         </section>
       </div>
@@ -268,6 +346,11 @@ export default {
   min-height: 100vh;
   padding: 20px;
   overflow-x: hidden;
+}
+
+#graph-radar {
+  width: 500px !important;
+  height: 600px !important;
 }
 
 .container {
@@ -413,7 +496,7 @@ h1 {
 }
 
 .studio-info {
-  flex: 1;
+  flex: 2;
   min-width: 320px;
   padding: 25px;
   background: white;
