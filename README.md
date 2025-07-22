@@ -6,6 +6,7 @@ leaflet
 font-awesome
 echarts
 vue-router
+vue-tippy
 ```
 
 要运行Vue项目，请使用
