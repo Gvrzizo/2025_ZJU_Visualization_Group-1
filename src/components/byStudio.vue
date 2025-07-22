@@ -6,14 +6,16 @@ import L from "leaflet"
 import { Tippy } from "vue-tippy"
 import * as echarts from 'echarts';
 import "vue"
+
 L.Popup.prototype._animateZoom = function (e) {
   if (!this._map) {
-    return
+    return ;
   }
   var pos = this._map._latLngToNewLayerPoint(this._latlng, e.zoom, e.center),
     anchor = this._getAnchor()
   L.DomUtil.setPosition(this._container, pos.add(anchor))
 }
+
 export default {
       components: [Tippy],
       data() { return {
@@ -85,6 +87,7 @@ export default {
           this.map = null;
           this.initMap();
           this.updateMapMarkers();
+          this.updateSuggestions();
         }},
         // 当有选择的工作室时，图表对应DOM元素被加载，可以设置图表
         selectedStudio(newVal) {
@@ -96,8 +99,10 @@ export default {
           }
         },
         radarSearch(newVal) {
+          if (this.graph2) this.updateSuggestions();
           if (this.graph2 && this.searchQuery && newVal.length) {
             this.setGraph2();
+            this.updateSuggestions();
           }
         },
         activeMod() {
@@ -135,13 +140,82 @@ export default {
           this.graph2.dispose();
           this.graph2 = null;
         }
+        this.desLis();
       },
       mounted() {
         this.initMap();
         this.addMarkers();
+        this.closeSugLis();
       },
       methods: {
         max(a, b) {return a > b ? a : b;},
+        closeSugLis() {
+          const sug = document.getElementById("suggestionslist");
+          document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-box')) {
+              sug.style.display = 'none';
+            }
+          }, true);
+        },
+        desLis() {
+          const sug = document.getElementById("suggestionslist");
+          document.removeEventListener('click', (e) => {
+            if (!e.target.closest('.search-box')) {
+              sug.style.display = 'none';
+            }
+          }, true);
+        },
+        updateSuggestions() {
+          const sug = document.getElementById("suggestionslist");
+          sug.innerHTML = "";
+          if (!this.searchQuery) {
+            sug.style.display = 'none';
+            return ;
+          }
+          if (this.activeMod === "可交互地图") {
+            if (!this.filteredStudios.length) {
+              sug.style.display = 'none';
+              return ;
+            }
+            if (this.filteredStudios.length === 1 && this.filteredStudios[0].studio === this.searchQuery) {
+              sug.style.display = 'none';
+              return ;
+            }
+            sug.style.display = 'block';
+            this.filteredStudios.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item.studio;
+              li.className = "sugli";
+              li.addEventListener('click', () => {
+                this.searchQuery = item.studio;
+                this.selectedStudio = item;
+                sug.style.display = 'none';
+              });
+              sug.appendChild(li);
+            })
+          }
+          else {
+            if (!this.radarSearch.length) {
+              sug.style.display = 'none';
+              return ;
+            }
+            if (this.radarSearch.length === 1 && this.radarSearch[0].studios === this.searchQuery) {
+              sug.style.display = 'none';
+              return ;
+            }
+            sug.style.display = 'block';
+            this.radarSearch.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item.studios;
+              li.className = "sugli";
+              li.addEventListener('click', () => {
+                this.searchQuery = item.studios;
+                sug.style.display = 'none';
+              });
+              sug.appendChild(li);
+            })
+          }
+        },
         initGraph() {
           this.graph = echarts.init(document.getElementById("graph-radar"));
         },
@@ -370,6 +444,7 @@ export default {
           <div class="search-box">
             <input type="text" v-model="searchQuery" placeholder="搜索工作室...">
             <i class="fas fa-search"></i>
+            <ul id = "suggestionslist" class = 'suggestions'></ul>
           </div>
         </section>
         
@@ -491,6 +566,38 @@ export default {
 #radar2 {
   width: 1400px !important;
   height: 70vh !important;
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+  padding-left: 0px;
+}
+
+:deep(.sugli) {
+  color: #333;
+  font-size: 20px;
+  opacity: 1 !important;
+  padding: 10px;
+  cursor: pointer;
+  list-style-type: none;
+  transition: 0.3s;
+}
+
+:deep(.sugli:hover) {
+  background: #4361ee !important;
+  color: #eee;
 }
 
 .container {
