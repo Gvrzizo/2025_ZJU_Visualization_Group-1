@@ -30,7 +30,8 @@ export default {
           activeRegion: "全部",
           mods: ["可交互地图", "公司雷达图"],
           activeMod: "可交互地图",
-          searchQuery: ""
+          searchQuery: "",
+          stack: []
         }
       },
       computed: {
@@ -141,6 +142,7 @@ export default {
           this.graph2 = null;
         }
         this.desLis();
+        this.stack = [];
       },
       mounted() {
         this.initMap();
@@ -149,6 +151,16 @@ export default {
       },
       methods: {
         max(a, b) {return a > b ? a : b;},
+        unique(arr) {return [...new Set(arr)];},
+        toStack() {
+          const tmpData = this.graph2.getOption().series[0].data;
+          if (tmpData.length <= 5) this.stack.push(tmpData[tmpData.length - 1]);
+          this.stack = this.unique(this.stack);
+        },
+        emptyStack() {
+          this.stack = [];
+          this.setGraph2();
+        },
         closeSugLis() {
           const sug = document.getElementById("suggestionslist");
           document.addEventListener('click', (e) => {
@@ -260,6 +272,9 @@ export default {
         },
         setGraph2() {
           if (!this.radarSearch) return ;
+          this.graph2.dispose();
+          this.graph2 = null;
+          this.initGraph2();
           const left = this.radarSearch[0];
           this.graph2.setOption({
             title: {
@@ -268,7 +283,7 @@ export default {
             },
             tooltip: {},
             legend: {
-              align: "right"
+              left: "right"
             },
             radar: {
               //shape: 'circle',
@@ -294,7 +309,8 @@ export default {
               {
                 name: '',
                 type: 'radar',
-                data: [
+                areaStyle: {},
+                data: this.unique(this.stack.concat([
                   {
                     value: [this.max(6, left.Adventure), this.max(6, left.Comedy), 
                             this.max(6, left.Fantasy), this.max(6, left.Action), 
@@ -305,9 +321,9 @@ export default {
                             this.max(6, left["Avant Garde"]), this.max(6, left["Boys Love"]),
                             this.max(6, left["Girls Love"])
                           ],
-                    name: '类别实力'
+                    name: left.studios
                   }
-                ]
+                ]))
               }
             ]
           });
@@ -325,7 +341,6 @@ export default {
           this.resizeObserver = new ResizeObserver(() => {
             if (this.map) {
               this.$nextTick(() => {
-                console.log("checked\n");
                 this.map.invalidateSize();
               });
             }
@@ -427,12 +442,12 @@ export default {
 
           <div class="stats-bar">
             <div class="stat-card">
-              <div class="stat-value">{{ studios.length }}</div>
+              <div class="stat-value">{{ activeMod === '可交互地图' ? studios.length : power.length}}</div>
               <div class="stat-label">工作室数量</div>
             </div>
             <div class="stat-card">
-              <div class="stat-value">{{ totalAnimeCount }}</div>
-              <div class="stat-label">动画总数（重复计数）</div>
+              <div class="stat-value">{{ activeMod === '可交互地图' ? totalAnimeCount : 17871}}</div>
+              <div class="stat-label">动画总数</div>
             </div>
             <div class="stat-card">
               <div class="stat-value">{{ highestAvgScore }}</div>
@@ -531,7 +546,11 @@ export default {
             </div>
           </div>
         </section>
-
+        
+        <div>
+          <button @click = "toStack" class = "radarbuttons">Add</button>
+          <button @click = "emptyStack" class = "radarbuttons">Cls</button>
+        </div>
         <section class = "map-section" v-if = "activeMod === '公司雷达图'">
           <div id = "radar2"></div>
         </section>
@@ -567,6 +586,31 @@ export default {
   width: 1400px !important;
   height: 70vh !important;
 }
+
+.radarbuttons {
+	box-shadow:inset 0px -3px 7px 0px #29bbff;
+	background:linear-gradient(to bottom, #2dabf9 5%, #0688fa 100%);
+	background-color:#2dabf9;
+	border-radius:3px;
+	border:1px solid #0b0e07;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	padding:9px 23px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #263666;
+}
+.radarbuttons:hover {
+	background:linear-gradient(to bottom, #0688fa 5%, #2dabf9 100%);
+	background-color:#0688fa;
+}
+.radarbuttons:active {
+	position:relative;
+	top:1px;
+}
+
 
 .suggestions {
   position: absolute;
