@@ -70,7 +70,6 @@
     let number=ref(0)
     function getTranslated(ori) {
         const filtered = translated.filter(item => item.name === ori);
-        console.log(filtered);
         if (!filtered.length) return "";
         return filtered[0].local;
     }
