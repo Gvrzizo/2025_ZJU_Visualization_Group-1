@@ -3,6 +3,7 @@ import byStudio from '@/components/byStudio.vue'
 import Rankingpage from '@/components/rankingpage.vue';
 import LineChart from '@/components/line_chart.vue'
 import Home from '@/components/Home.vue'
+import WordChart from '@/components/cloud_chart.vue'
 const routes = [
   {
     path: '/',
@@ -23,6 +24,11 @@ const routes = [
     path: '/line_chart',
     name: 'LineChart',
     component: LineChart
+  },
+  {
+    path: '/cloud_chart',
+    name: 'CloudChart',
+    component: WordChart
   }
 ];
 

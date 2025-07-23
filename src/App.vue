@@ -6,6 +6,7 @@
         <router-link to="/studio"><h2>（仮）根据工作室分析</h2></router-link>
         <router-link to="/rank"><h2>动画列表</h2></router-link>
         <router-link to="/line_chart"><h2>同上，好看的折线图是也</h2></router-link>
+        <router-link to="/cloud_chart"><h2>词云来了</h2></router-link>
       </div>
     </div>
     <div v-else class="nav-container">
@@ -14,6 +15,7 @@
         <router-link to="/studio" class="nav-item">（仮）根据工作室分析</router-link>
         <router-link to="/rank" class="nav-item">动画列表</router-link>
         <router-link to="/line_chart" class="nav-item">同上，好看的折线图是也</router-link>
+        <router-link to="/cloud_chart" class="nav-item">词云来了</router-link>
       </nav>
     </div>
     <router-view />
