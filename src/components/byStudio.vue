@@ -549,7 +549,7 @@ export default {
         
         <div v-if = "activeMod === '公司雷达图'">
           <button @click = "toStack" class = "radarbuttons">Add</button>
-          <button @click = "emptyStack" class = "radarbuttons">Cls</button>
+          <button @click = "emptyStack" class = "radarbuttons">Clear</button>
         </div>
         <section class = "map-section" v-if = "activeMod === '公司雷达图'">
           <div id = "radar2"></div>
@@ -557,7 +557,7 @@ export default {
       </div>
       
       <footer>
-        <p>动画工作室地图可视化 | 使用Vue.js和Leaflet构建 | 数据来源: Kaggle</p>
+        <p>动画工作室地图可视化 | 使用Vue.js和Leaflet构建 | 数据来源: Kaggle ~ MyAnimeList</p>
       </footer>
     </div>
   </div>
@@ -578,12 +578,12 @@ export default {
 }
 
 #graph-radar {
-  width: 500px !important;
+  width: 100% !important;
   height: 600px !important;
 }
 
 #radar2 {
-  width: 1400px !important;
+  width: 100% !important;
   height: 70vh !important;
 }
 
@@ -645,7 +645,7 @@ export default {
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
@@ -672,7 +672,6 @@ h1 {
 .app-container {
   display: flex;
   flex-direction: column;
-  gap: 25px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
