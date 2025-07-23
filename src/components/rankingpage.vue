@@ -14,6 +14,7 @@
             <button @click="sortbypopularity">人气最高</button>
         </div>
         <table>
+          <tbody>
             <tr>
                 <th>位次</th>
                 <th>id</th>
@@ -30,8 +31,9 @@
                 <td>{{ getTranslated(data.name) }}</td>
                 <td>{{ data.type }}</td>
                 <td>{{ data.score }}</td>
-                <button @click="check(index+(pages-1)*50)">查看详情</button>
+                <td><button @click="check(index+(pages-1)*50)">查看详情</button></td>
             </tr>
+          </tbody>
         </table>
     </div>
     <div v-if="visi">
@@ -119,6 +121,7 @@
 <style scoped>
     #rankingpageroot {
         background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+        min-height: 100vh;
     }
     .lists, .container {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

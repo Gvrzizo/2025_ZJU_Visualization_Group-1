@@ -45,8 +45,8 @@
     import cloudData from "@/assets/cloud_data.json"
 
     const layoutId = ref(0);
-    const minword = ref(20);
-    const maxword = ref(40);
+    const minword = ref(30);
+    const maxword = ref(50);
     const sizeWeight = 80;
     const rawInput = ref(''); // 存储实时输入值
     const search = ref('');
@@ -323,7 +323,7 @@ header h1 {
   padding: 12px 40px 12px 16px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
-  color: white;
+  color: black;
   border: 1px solid rgba(255, 255, 255, 0.3);
   font-size: 16px;
 }
@@ -364,8 +364,8 @@ header h1 {
 
 /* 词云容器 */
 .cloud-container {
-  width: 1000px;
-  height: 600px;
+  width: 60%;
+  height: 800px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.815);
   backdrop-filter: blur(5px);
