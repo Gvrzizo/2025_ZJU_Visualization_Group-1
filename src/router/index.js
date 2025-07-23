@@ -29,6 +29,10 @@ const routes = [
     path: '/cloud_chart',
     name: 'CloudChart',
     component: WordChart
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
   }
 ];
 
