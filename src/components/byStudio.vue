@@ -1,21 +1,37 @@
 <script>
 import studiosData from "@/assets/studioData.json"
+import studioPower from "@/assets/studioPower.json"
 import localizationData from "@/assets/localization.json"
 import L from "leaflet"
 import { Tippy } from "vue-tippy"
 import * as echarts from 'echarts';
 import "vue"
+
+L.Popup.prototype._animateZoom = function (e) {
+  if (!this._map) {
+    return ;
+  }
+  var pos = this._map._latLngToNewLayerPoint(this._latlng, e.zoom, e.center),
+    anchor = this._getAnchor()
+  L.DomUtil.setPosition(this._container, pos.add(anchor))
+}
+
 export default {
       components: [Tippy],
       data() { return {
           map: null,
           graph: null,
+          graph2: null,
           markers: [],
           studios: studiosData,
+          power: studioPower,
           selectedStudio: null,
           regions: ["全部", "亚洲", "美洲", "欧洲"],
           activeRegion: "全部",
-          searchQuery: ""
+          mods: ["可交互地图", "公司雷达图"],
+          activeMod: "可交互地图",
+          searchQuery: "",
+          stack: []
         }
       },
       computed: {
@@ -36,11 +52,6 @@ export default {
         filteredStudios() {
           let result = [...this.studios];
           
-          // 地区过滤
-          if (this.activeRegion !== "全部") {
-            result = result.filter(studio => studio.region === this.activeRegion);
-          }
-          
           // 搜索过滤
           if (this.searchQuery) {
             const query = this.searchQuery.toLowerCase();
@@ -52,6 +63,18 @@ export default {
           
           return result;
         },
+        radarSearch() {
+          let result = [... this.power];
+
+          if (this.searchQuery) {
+            const query = this.searchQuery.toLowerCase();
+            result = result.filter(studio =>
+              studio.studios.toLowerCase().includes(query)
+            );
+          }
+
+          return result;
+        },
         localValue() {
           return (name) => {
             return localizationData.find(item => item.name === name).local;
@@ -60,33 +83,156 @@ export default {
       },
       watch: {
         // 当过滤条件变化时更新地图标记
-        filteredStudios() {
+        filteredStudios() { if (this.map) {
           this.map.remove();
+          this.map = null;
           this.initMap();
           this.updateMapMarkers();
+          this.updateSuggestions();
+        }},
+        // 当有选择的工作室时，图表对应DOM元素被加载，可以设置图表
+        selectedStudio(newVal) {
+          if (newVal) {
+            this.$nextTick(() => {
+              if (!this.graph) this.initGraph();
+              this.setGraph();
+            });
+          }
         },
-        selectedStudio() {
-          this.$nextTick(() => {
-            this.initGraph();
-            this.setGraph();
-          })
+        radarSearch(newVal) {
+          if (this.graph2) this.updateSuggestions();
+          if (this.graph2 && this.searchQuery && newVal.length) {
+            this.setGraph2();
+            this.updateSuggestions();
+          }
+        },
+        activeMod() {
+          if (this.activeMod === "公司雷达图") {
+            this.map.remove();
+            this.map = null;
+            if (this.graph) {
+              this.graph.dispose();
+              this.graph = null;
+            }
+            this.$nextTick(() => {
+              this.initGraph2();
+            });
+          }
+          else {
+            this.graph2.dispose();
+            this.graph2 = null;
+            this.$nextTick(() => {
+              this.initMap();
+              this.updateMapMarkers();
+            });
+          }
         }
       },
       beforeDestroy() {
         if (this.map) {
           this.map.remove();
+          this.map = null;
         }
         if (this.graph) {
           this.graph.dispose();
+          this.graph = null;
         }
+        if (this.graph2) {
+          this.graph2.dispose();
+          this.graph2 = null;
+        }
+        this.desLis();
+        this.stack = [];
       },
       mounted() {
         this.initMap();
         this.addMarkers();
+        this.closeSugLis();
       },
       methods: {
+        max(a, b) {return a > b ? a : b;},
+        unique(arr) {return [...new Set(arr)];},
+        toStack() {
+          const tmpData = this.graph2.getOption().series[0].data;
+          if (tmpData.length <= 5) this.stack.push(tmpData[tmpData.length - 1]);
+          this.stack = this.unique(this.stack);
+        },
+        emptyStack() {
+          this.stack = [];
+          this.setGraph2();
+        },
+        closeSugLis() {
+          const sug = document.getElementById("suggestionslist");
+          document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-box')) {
+              sug.style.display = 'none';
+            }
+          }, true);
+        },
+        desLis() {
+          const sug = document.getElementById("suggestionslist");
+          document.removeEventListener('click', (e) => {
+            if (!e.target.closest('.search-box')) {
+              sug.style.display = 'none';
+            }
+          }, true);
+        },
+        updateSuggestions() {
+          const sug = document.getElementById("suggestionslist");
+          sug.innerHTML = "";
+          if (!this.searchQuery) {
+            sug.style.display = 'none';
+            return ;
+          }
+          if (this.activeMod === "可交互地图") {
+            if (!this.filteredStudios.length) {
+              sug.style.display = 'none';
+              return ;
+            }
+            if (this.filteredStudios.length === 1 && this.filteredStudios[0].studio === this.searchQuery) {
+              sug.style.display = 'none';
+              return ;
+            }
+            sug.style.display = 'block';
+            this.filteredStudios.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item.studio;
+              li.className = "sugli";
+              li.addEventListener('click', () => {
+                this.searchQuery = item.studio;
+                this.selectedStudio = item;
+                sug.style.display = 'none';
+              });
+              sug.appendChild(li);
+            })
+          }
+          else {
+            if (!this.radarSearch.length) {
+              sug.style.display = 'none';
+              return ;
+            }
+            if (this.radarSearch.length === 1 && this.radarSearch[0].studios === this.searchQuery) {
+              sug.style.display = 'none';
+              return ;
+            }
+            sug.style.display = 'block';
+            this.radarSearch.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item.studios;
+              li.className = "sugli";
+              li.addEventListener('click', () => {
+                this.searchQuery = item.studios;
+                sug.style.display = 'none';
+              });
+              sug.appendChild(li);
+            })
+          }
+        },
         initGraph() {
           this.graph = echarts.init(document.getElementById("graph-radar"));
+        },
+        initGraph2() {
+          this.graph2 = echarts.init(document.getElementById("radar2"));
         },
         setGraph() {
           this.graph.setOption({
@@ -98,13 +244,13 @@ export default {
             radar: {
               //shape: 'circle',
               indicator: [
-                { name: '冒险', max: 10 },
-                { name: '喜剧', max: 10 },
-                { name: '幻想', max: 10 },
-                { name: '动作', max: 10 },
-                { name: '日常', max: 10 },
-                { name: '悬疑', max: 10 },
-                { name: '恋爱', max: 10 }
+                { name: '冒险', max: 8.5, min: 5.5},
+                { name: '喜剧', max: 8.5, min: 5.5},
+                { name: '幻想', max: 8.5, min: 5.5},
+                { name: '动作', max: 8.5, min: 5.5},
+                { name: '日常', max: 8.5, min: 5.5},
+                { name: '悬疑', max: 8.5, min: 5.5},
+                { name: '恋爱', max: 8.5, min: 5.5}
               ]
             },
             series: [
@@ -113,12 +259,71 @@ export default {
                 type: 'radar',
                 data: [
                   {
-                    value: [this.selectedStudio.Adventure, this.selectedStudio.Comedy, this.selectedStudio.Fantasy,
-                            this.selectedStudio.Action, this.selectedStudio["Slice of Life"], this.selectedStudio.Suspense,
-                            this.selectedStudio.Romance],
+                    value: [this.max(6, this.selectedStudio.Adventure), this.max(6, this.selectedStudio.Comedy), 
+                            this.max(6, this.selectedStudio.Fantasy), this.max(6, this.selectedStudio.Action), 
+                            this.max(6, this.selectedStudio["Slice of Life"]), this.max(6, this.selectedStudio.Suspense),
+                            this.max(6, this.selectedStudio.Romance)],
                     name: ''
                   }
                 ]
+              }
+            ]
+          });
+        },
+        setGraph2() {
+          if (!this.radarSearch) return ;
+          this.graph2.dispose();
+          this.graph2 = null;
+          this.initGraph2();
+          const left = this.radarSearch[0];
+          this.graph2.setOption({
+            title: {
+              text: `${left.studios}类别实力雷达图`,
+              align: "center"
+            },
+            tooltip: {},
+            legend: {
+              left: "right"
+            },
+            radar: {
+              //shape: 'circle',
+              indicator: [
+                { name: '冒险', max: 8.5, min: 5.5},
+                { name: '喜剧', max: 8.5, min: 5.5},
+                { name: '幻想', max: 8.5, min: 5.5},
+                { name: '动作', max: 8.5, min: 5.5},
+                { name: '日常', max: 8.5, min: 5.5},
+                { name: '悬疑', max: 8.5, min: 5.5},
+                { name: '恋爱', max: 8.5, min: 5.5},
+                { name: '科幻', max: 8.5, min: 5.5},
+                { name: '超自然', max: 8.5, min: 5.5},
+                { name: '体育', max: 8.5, min: 5.5},
+                { name: '美食', max: 8.5, min: 5.5},
+                { name: '恐怖', max: 8.5, min: 5.5},
+                { name: '前卫', max: 8.5, min: 5.5},
+                { name: 'BL', max: 8.5, min: 5.5},
+                { name: 'GL', max: 8.5, min: 5.5}
+              ]
+            },
+            series: [
+              {
+                name: '',
+                type: 'radar',
+                areaStyle: {},
+                data: this.unique(this.stack.concat([
+                  {
+                    value: [this.max(6, left.Adventure), this.max(6, left.Comedy), 
+                            this.max(6, left.Fantasy), this.max(6, left.Action), 
+                            this.max(6, left["Slice of Life"]), this.max(6, left.Suspense),
+                            this.max(6, left.Romance), this.max(6, left["Sci-Fi"]),
+                            this.max(6, left.Supernatural), this.max(6, left.Sports),
+                            this.max(6, left.Gourmet), this.max(6, left.Horror),
+                            this.max(6, left["Avant Garde"]), this.max(6, left["Boys Love"]),
+                            this.max(6, left["Girls Love"])
+                          ],
+                    name: left.studios
+                  }
+                ]))
               }
             ]
           });
@@ -142,7 +347,7 @@ export default {
           });
           this.resizeObserver.observe(this.$refs.mapContainer);
         },
-        addMarkers() {
+        addMarkers() { if (this.map){
           // 清除现有标记
           this.markers.forEach(marker => this.map.removeLayer(marker));
           this.markers = [];
@@ -188,8 +393,8 @@ export default {
             this.map.setView(this.filteredStudios[0].coordinates, 6);
             this.selectedStudio = this.filteredStudios[0];
           }
-        },
-        updateMapMarkers() {
+        }},
+        updateMapMarkers() { if (this.map){
           this.addMarkers();
           
           // 如果有多个标记点，调整地图视图以包含所有标记
@@ -197,10 +402,15 @@ export default {
             const group = new L.featureGroup(this.markers);
             this.map.fitBounds(group.getBounds().pad(0.1));
           }
-        },
+        }},
         filterByRegion(region) {
           this.activeRegion = region;
           this.selectedStudio = null;
+        },
+        filterByMod(mod) {
+          this.activeMod = mod;
+          this.selectedStudio = null;
+          this.searchQuery = "";
         }
       }
     };
@@ -216,14 +426,28 @@ export default {
       
       <div class="app-container">
         <section class="controls-section">
+          <div class = "filter-controls">
+            <button
+              v-for = "mod in mods"
+              :key = "mod"
+              class = "filter-btn"
+              :class = "{active: activeMod === mod}"
+              @click="filterByMod(mod)"
+            >
+              <i class = "fas fa-globe" v-if = "mod === '可交互地图'"></i>
+              <i class = "fas fa-pie-chart" v-if = "mod === '公司雷达图'"></i>
+              {{ mod }}
+            </button>
+          </div>
+
           <div class="stats-bar">
             <div class="stat-card">
-              <div class="stat-value">{{ studios.length }}</div>
+              <div class="stat-value">{{ activeMod === '可交互地图' ? studios.length : power.length}}</div>
               <div class="stat-label">工作室数量</div>
             </div>
             <div class="stat-card">
-              <div class="stat-value">{{ totalAnimeCount }}</div>
-              <div class="stat-label">动画总数（重复计数）</div>
+              <div class="stat-value">{{ activeMod === '可交互地图' ? totalAnimeCount : 17871}}</div>
+              <div class="stat-label">动画总数</div>
             </div>
             <div class="stat-card">
               <div class="stat-value">{{ highestAvgScore }}</div>
@@ -235,11 +459,12 @@ export default {
           <div class="search-box">
             <input type="text" v-model="searchQuery" placeholder="搜索工作室...">
             <i class="fas fa-search"></i>
+            <ul id = "suggestionslist" class = 'suggestions'></ul>
           </div>
         </section>
         
-        <section class="map-section">
-          <div id="map"></div>
+        <section class="map-section" v-if = "activeMod === '可交互地图'">
+          <div id="map" ref = "mapContainer"></div>
           <div class="studio-info">
             <div class="info-placeholder" v-if="!selectedStudio">
               <i class="fas fa-map-marker-alt"></i>
@@ -318,17 +543,21 @@ export default {
                   </div>
                 </div>
               </div>
-
-              
-
             </div>
-
           </div>
+        </section>
+        
+        <div v-if = "activeMod === '公司雷达图'">
+          <button @click = "toStack" class = "radarbuttons">Add</button>
+          <button @click = "emptyStack" class = "radarbuttons">Clear</button>
+        </div>
+        <section class = "map-section" v-if = "activeMod === '公司雷达图'">
+          <div id = "radar2"></div>
         </section>
       </div>
       
       <footer>
-        <p>动画工作室地图可视化 | 使用Vue.js和Leaflet构建 | 数据来源: Kaggle</p>
+        <p>动画工作室地图可视化 | 使用Vue.js和Leaflet构建 | 数据来源: Kaggle ~ MyAnimeList</p>
       </footer>
     </div>
   </div>
@@ -349,12 +578,74 @@ export default {
 }
 
 #graph-radar {
-  width: 500px !important;
+  width: 100% !important;
   height: 600px !important;
 }
 
+#radar2 {
+  width: 100% !important;
+  height: 70vh !important;
+}
+
+.radarbuttons {
+	box-shadow:inset 0px -3px 7px 0px #29bbff;
+	background:linear-gradient(to bottom, #2dabf9 5%, #0688fa 100%);
+	background-color:#2dabf9;
+	border-radius:3px;
+	border:1px solid #0b0e07;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	padding:9px 23px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #263666;
+}
+.radarbuttons:hover {
+	background:linear-gradient(to bottom, #0688fa 5%, #2dabf9 100%);
+	background-color:#0688fa;
+}
+.radarbuttons:active {
+	position:relative;
+	top:1px;
+}
+
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+  padding-left: 0px;
+}
+
+:deep(.sugli) {
+  color: #333;
+  font-size: 20px;
+  opacity: 1 !important;
+  padding: 10px;
+  cursor: pointer;
+  list-style-type: none;
+  transition: 0.3s;
+}
+
+:deep(.sugli:hover) {
+  background: #4361ee !important;
+  color: #eee;
+}
+
 .container {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
@@ -381,7 +672,6 @@ h1 {
 .app-container {
   display: flex;
   flex-direction: column;
-  gap: 25px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
@@ -458,12 +748,15 @@ h1 {
 .search-box {
   max-width: 2000px;
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
 }
 
 .search-box input {
-  width: 100%;
-  padding: 12px 40px 12px 20px;
+  width: 80%;
+  padding: 12px 30px 12px 20px;
   border: 2px solid #ddd;
   border-radius: 30px;
   font-size: 1rem;
@@ -478,7 +771,7 @@ h1 {
 
 .search-box i {
   position: absolute;
-  right: -50px;
+  right: 13px;
   top: 50%;
   transform: translateY(-50%);
   color: #777;

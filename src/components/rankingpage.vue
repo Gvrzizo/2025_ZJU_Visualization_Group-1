@@ -1,9 +1,10 @@
 <template>
+  <div id = "rankingpageroot">
     <div v-if="!visi" class="lists">
         <h1>动画列表</h1>
         <div class="pageschange">
             <button @click="pagesdown" :disabled="pages==1">上一页</button>
-            当前页码：<input type="number" v-model="npages" placeholder="请输入页码">
+            当前页码：<input type="number" v-model="npages" placeholder="请输入页码"> / 552
             <button @click="gotopage(npages)">跳转</button>
             <button @click="pagesup" :disabled="pages==552">下一页</button>
         </div>
@@ -17,6 +18,7 @@
                 <th>位次</th>
                 <th>id</th>
                 <th>name</th>
+                <th>localized</th>
                 <th>type</th>
                 <th>score</th>
                 <th></th>
@@ -25,6 +27,7 @@
                 <td>{{ index+(pages-1)*50+1 }}</td>
                 <td>{{ data.id }}</td>
                 <td>{{ data.name }}</td>
+                <td>{{ getTranslated(data.name) }}</td>
                 <td>{{ data.type }}</td>
                 <td>{{ data.score }}</td>
                 <button @click="check(index+(pages-1)*50)">查看详情</button>
@@ -37,7 +40,8 @@
             <div class="row">
                 <img :src="animeData[number].image">
                 <div class="details">
-                    <h2>{{ animeData[number].name }}</h2>
+                    <h2>{{ getTranslated(animeData[number].name) }}</h2>
+                    <h3><i>{{ animeData[number].name }}</i></h3>
                     <p><b>genres: </b>{{ animeData[number].genres }}</p>
                     <p><b>type: </b>{{ animeData[number].type }}</p>
                     <p><b>studios: </b>{{ animeData[number].studios }}</p>
@@ -53,15 +57,23 @@
             </div>
         </div>
     </div>
+  </div>
 </template>
 <script setup>
     import localData from '@/assets/anime_data.json'
+    import translated from '@/assets/localization.json'
     import {ref,computed} from 'vue'
     let animeData=ref(localData)
     let pages=ref(1)
     let npages=ref(1)
     let visi=ref(false)
     let number=ref(0)
+    function getTranslated(ori) {
+        const filtered = translated.filter(item => item.name === ori);
+        console.log(filtered);
+        if (!filtered.length) return "";
+        return filtered[0].local;
+    }
     function pagesdown(){
         pages.value--;
         npages.value=pages.value;
@@ -106,16 +118,19 @@
     }
 </script>
 <style scoped>
+    #rankingpageroot {
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+    }
     .lists, .container {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        max-width: 1200px;
+        max-width: 1500px;
         margin: 0 auto;
         padding: 20px;
         color: #333333;
     }
     h1 {
         text-align: center;
-        color: #2c3e50;
+        color: #ffffff;
         margin-bottom: 25px;
         font-size: 2.2rem;
         position: relative;
@@ -123,9 +138,9 @@
     h1::after {
         content: "";
         display: block;
-        width: 100px;
+        width: 150px;
         height: 4px;
-        background: linear-gradient(90deg, #42b883, #35495e);
+        background: linear-gradient(90deg, #42b883, #29af5d);
         margin: 10px auto;
         border-radius: 2px;
     }
@@ -217,6 +232,9 @@
     tr:nth-child(even) {
         background-color: #f8f9fa;
     }
+    tr:nth-child(odd) {
+        background-color: #ebecee;
+    }
     tr:hover {
         background-color: #edf7f2;
         transition: background-color 0.2s;
@@ -242,10 +260,10 @@
         margin-bottom: 30px;
     }
     img {
-        flex: 1;
+        flex: none;
         min-width: 300px;
         max-height: 450px;
-        object-fit: cover;
+        object-fit: contain;
         border-radius: 8px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
@@ -257,6 +275,12 @@
         color: #2c3e50;
         margin-top: 0;
         font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+    .details h3 {
+        color: #a2a3a3;
+        margin-top: 0;
+        font-size: 1.2rem;
         border-bottom: 2px solid #42b883;
         padding-bottom: 10px;
         margin-bottom: 20px;
