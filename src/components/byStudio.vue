@@ -547,7 +547,7 @@ export default {
           </div>
         </section>
         
-        <div>
+        <div v-if = "activeMod === '公司雷达图'">
           <button @click = "toStack" class = "radarbuttons">Add</button>
           <button @click = "emptyStack" class = "radarbuttons">Cls</button>
         </div>
