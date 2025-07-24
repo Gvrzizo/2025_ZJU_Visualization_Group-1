@@ -83,9 +83,30 @@
         </div>
       </div>
     </div>
+    <div class="controls">
+        <div class="control-group">
+          <h3>年份范围</h3>
+          <div class="year-range">
+            <div class="slider-container">
+              <input 
+                type="range" 
+                v-model.number="choseYear" 
+                min="2000" 
+                max="2025" 
+                class="slider"
+                @input="updatePieCharts"
+              >
+              <span>{{ choseYear }}</span>
+            </div>
+          </div>
+        </div>
+    </div>
 
     <div class = "charts-container">
-
+      <div class="chart-card">
+        <h2> ({{choseYear}})年份各类型占比饼图</h2>
+        <div ref="pieChart" class="chart"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -94,30 +115,47 @@
 import { ref, onMounted, watch } from 'vue';
 import * as echarts from 'echarts';
 import animeDataJson from '@/assets/data_line_2020+.json';
+import pieData from '@/assets/pie_data.json';
 const genres = [
   'Supernatural', 'Fantasy', 'Drama', 
   'Adventure', 'Action', 'Romance', 'Comedy'
 ];
 
 const genreColors = {
-  Supernatural: '#5470C6',
-  Fantasy: '#91CC75',
-  Drama: '#FAC858',
-  Adventure: '#EE6666',
-  Action: '#73C0DE',
-  Romance: '#3BA272',
-  Comedy: '#FC8452'
+  "Supernatural": '#5470C6',    // 深蓝
+  "Fantasy": '#91CC75',         // 草木绿
+  "Drama": '#FAC858',           // 金黄
+  "Adventure": '#EE6666',       // 暖红
+  "Action": '#73C0DE',          // 天蓝
+  "Romance": '#3BA272',         // 深绿
+  "Comedy": '#FC8452',          // 橙黄
+  // 新增颜色 (兼顾色系平衡和视觉区分度)
+  "Slice of Life": '#9A7FD1',   // 薰衣草紫
+  "Other": '#CCCCCC',           // 中性灰
+  "Mystery": '#6A5ACD',         // 石板蓝
+  "Hentai": '#D45087',          // 莓果红
+  "Sports": '#20B2AA',          // 海蓝
+  "Horror": '#8B0000',          // 暗血红
+  "Gourmet": '#D2691E',         // 巧克力棕
+  "Avant Garde": '#00CED1',   // 凫青
+  "Suspense": '#9370DB',        // 中紫
+  "Ecchi": '#FF69B4',           // 亮粉
+  "Award Winning": '#FFD700', // 荣耀金
+  "Boys Love": '#BA55D3'      // 梅紫
 };
 
 const selectedGenres = ref([...genres]);
 const activeGenre = ref({});
 const startYear = ref(2000);
 const endYear = ref(2025);
+const choseYear = ref(2000);
 
 const avgChart = ref(null);
 const countChart = ref(null);
+const pieChart = ref(null);
 let avgChartInstance = null;
 let countChartInstance = null;
+let pieChartInstance = null;
 
 // 统计数据
 const highestScore = ref({ value: 0, genre: '', year: 0 });
@@ -157,6 +195,7 @@ const calculateStats = () => {
       genre: maxScoreItem.genres,
       year: maxScoreItem.years
     };
+    console.log(highestScore);
   }
 
   if (maxCountItem) {
@@ -272,7 +311,6 @@ const processData = () => {
   return { years, avgSeries, countSeries };
 };
 
-// 渲染图表
 const renderCharts = () => {
   if (!animeData.value.length || !avgChart.value || !countChart.value) return;
   // 销毁旧实例
@@ -395,10 +433,121 @@ const renderCharts = () => {
   countChartInstance.resize();
 };
 
-window.addEventListener('resize', () => {
-  avgChartInstance?.resize();
-  countChartInstance?.resize();
-});
+//pie chart part
+const process_pie_data = ()=>{
+  const pieData_group = {};
+  pieData.forEach(item =>{
+    if(!pieData_group[item.year]) pieData_group[item.year] = [];
+    pieData_group[item.year].push({name: item.type, value: item.number, percent : item.percent}); 
+  })
+  return pieData_group;
+}
+
+// 渲染图表
+const renderPieChart = () =>{
+    // 在renderPieChart中添加
+  const pieData_group = process_pie_data();
+  const pieData_chose = pieData_group[choseYear.value];
+  
+  if (pieData_chose.length === 0) {
+    pieChartInstance.setOption({
+      title: {
+        text: `${choseYear.value}年无数据`,
+        left: 'center',
+        top: 'center'
+      }
+    });
+    return;
+  }
+
+  if(!pieData.length || !pieChart.value) return;
+  if(pieChartInstance) {
+    pieChartInstance.dispose();
+    pieChartInstance = null;
+  }
+  pieChartInstance = echarts.init(pieChart.value);
+
+
+  const pieOption = {
+    tooltip: {
+      trigger: 'item',
+      formatter: ({name, value, percent}) => 
+        `${name}: ${value} (${percent}%)`,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      borderColor: 'rgba(255, 255, 255, 0.2)',
+      textStyle: {
+        color: '#fff',
+        fontSize: 14
+      }
+    },
+    legend: {
+      orient: 'vertical',
+      right: 20,
+      top: 'center',
+      data: pieData_chose.map(item => item.name),
+      textStyle: {
+        color: '#000'
+      },
+      formatter: (name) => {
+        const item = pieData_chose.find(d => d.name === name);
+        return `${name}:  ${item.value}, ${item.percent}% `;
+      }
+    },
+    series: [
+      {
+        name: '动画类型占比',
+        type: 'pie',
+        radius: ['0%', '100%'],
+        center: ['40%', '60%'],
+        roseType: 'area',
+        itemStyle: {
+          borderRadius: 8,
+          borderColor: '#1a2a6c',
+          borderWidth: 2
+        },
+        label: {
+          show: false
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: '18',
+            fontWeight: 'bold',
+            color: 'rgba(255, 255, 255, 0.9)'
+          },
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: pieData_chose.map(item => {
+        // 动态计算外半径
+        const k = 0.6; // 比例系数
+        const b = 40; // 偏移量
+        const innerRadius = 0; // 内半径固定为 0
+        const outerRadius = k * item.percent*100 + b; // 外半径根据公式计算
+
+        return {
+          value: item.value,
+          name: item.name,
+          itemStyle: {
+            color: genreColors[item.name],
+          },
+          //radius: [`${innerRadius}%`, `${outerRadius}%`] // 设置内外半径
+        };
+      })
+      }
+    ],
+    animation: true,
+    animationDuration: 1500,
+    animationEasing: 'cubicOut'
+  };
+  pieChartInstance.setOption(pieOption);
+}
 
 genres.forEach(genre=>{
   activeGenre.value[genre] = false;
@@ -440,12 +589,28 @@ const updateCharts = () => {
   renderCharts();
 };
 
+// 正确 - 监听selectedGenres变化
+watch(selectedGenres, () => {
+  renderCharts();
+}, { deep: true });
+
+const updatePieCharts = () =>{
+  renderPieChart();
+}
+
+// 需要添加对choseYear的监听
+watch(choseYear, () => {
+  renderPieChart();
+});
+
 onMounted(() => {
   calculateStats(); // 初始化时直接计算统计
   renderCharts(); 
+  renderPieChart();
   window.addEventListener('resize', () => {
     avgChartInstance?.resize();
     countChartInstance?.resize();
+    pieChartInstance?.resize();
   });
 });
 
