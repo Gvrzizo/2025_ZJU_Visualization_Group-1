@@ -104,7 +104,7 @@
 
     <div class = "charts-container">
       <div class="chart-card">
-        <h2> ({{choseYear}})年份各类型占比饼图</h2>
+        <h2> {{choseYear}}年份各类型占比饼图</h2>
         <div ref="pieChart" class="chart"></div>
       </div>
     </div>
