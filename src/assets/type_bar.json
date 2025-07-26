@@ -1,0 +1,480 @@
+{
+  "1975": {
+    "TV": 21,
+    "Movie": 22,
+    "Music": 10
+  },
+  "1976": {
+    "TV": 26,
+    "Movie": 19,
+    "Music": 13
+  },
+  "1977": {
+    "TV": 29,
+    "Movie": 18,
+    "Music": 10,
+    "CM": 1
+  },
+  "1978": {
+    "TV": 22,
+    "Movie": 35,
+    "Special": 2,
+    "TV Special": 2,
+    "Music": 15
+  },
+  "1979": {
+    "TV": 25,
+    "Movie": 40,
+    "Special": 6,
+    "TV Special": 10,
+    "OVA": 1,
+    "Music": 10
+  },
+  "1980": {
+    "TV": 28,
+    "Movie": 50,
+    "Special": 6,
+    "TV Special": 11,
+    "Music": 12
+  },
+  "1981": {
+    "TV": 30,
+    "Special": 7,
+    "Movie": 57,
+    "TV Special": 12,
+    "Music": 10
+  },
+  "1982": {
+    "Movie": 60,
+    "TV": 31,
+    "Special": 9,
+    "TV Special": 10,
+    "Music": 12
+  },
+  "1983": {
+    "TV": 37,
+    "Movie": 56,
+    "OVA": 3,
+    "TV Special": 6,
+    "Special": 6,
+    "CM": 1,
+    "Music": 19
+  },
+  "1984": {
+    "Movie": 55,
+    "TV": 38,
+    "OVA": 14,
+    "TV Special": 4,
+    "Special": 5,
+    "Music": 24,
+    "CM": 1
+  },
+  "1985": {
+    "TV": 19,
+    "OVA": 51,
+    "Movie": 66,
+    "Special": 3,
+    "TV Special": 2,
+    "Music": 17
+  },
+  "1986": {
+    "Movie": 56,
+    "TV": 27,
+    "OVA": 48,
+    "TV Special": 7,
+    "Music": 19,
+    "Special": 2,
+    "CM": 1
+  },
+  "1987": {
+    "TV": 31,
+    "Movie": 53,
+    "OVA": 74,
+    "Special": 7,
+    "TV Special": 6,
+    "Music": 24,
+    "CM": 1
+  },
+  "1988": {
+    "OVA": 66,
+    "Movie": 56,
+    "TV": 41,
+    "Special": 14,
+    "TV Special": 2,
+    "Music": 20
+  },
+  "1989": {
+    "Movie": 53,
+    "TV": 43,
+    "OVA": 99,
+    "TV Special": 4,
+    "Special": 6,
+    "Music": 25
+  },
+  "1990": {
+    "TV": 29,
+    "TV Special": 8,
+    "OVA": 103,
+    "Movie": 59,
+    "Special": 10,
+    "CM": 1,
+    "Music": 22,
+    "PV": 1
+  },
+  "1991": {
+    "TV": 40,
+    "Movie": 43,
+    "OVA": 120,
+    "TV Special": 3,
+    "Special": 7,
+    "Music": 18,
+    "CM": 1
+  },
+  "1992": {
+    "TV": 47,
+    "Movie": 57,
+    "OVA": 109,
+    "Special": 8,
+    "TV Special": 7,
+    "Music": 18,
+    "CM": 2
+  },
+  "1993": {
+    "TV": 27,
+    "Movie": 41,
+    "OVA": 124,
+    "TV Special": 9,
+    "Special": 6,
+    "Music": 19
+  },
+  "1994": {
+    "TV": 38,
+    "OVA": 106,
+    "Movie": 40,
+    "TV Special": 6,
+    "Music": 26,
+    "Special": 7,
+    "PV": 3
+  },
+  "1995": {
+    "TV": 45,
+    "Movie": 43,
+    "OVA": 90,
+    "Music": 22,
+    "Special": 10,
+    "TV Special": 10,
+    "CM": 3
+  },
+  "1996": {
+    "TV": 43,
+    "OVA": 107,
+    "TV Special": 8,
+    "Movie": 47,
+    "Special": 6,
+    "CM": 7,
+    "Music": 17
+  },
+  "1997": {
+    "Movie": 53,
+    "TV": 59,
+    "OVA": 92,
+    "TV Special": 9,
+    "Special": 10,
+    "Music": 19,
+    "CM": 3,
+    "PV": 1
+  },
+  "1998": {
+    "TV": 88,
+    "Movie": 44,
+    "OVA": 93,
+    "Special": 16,
+    "TV Special": 13,
+    "Music": 22,
+    "CM": 3,
+    "ONA": 1
+  },
+  "1999": {
+    "TV": 110,
+    "OVA": 84,
+    "Movie": 52,
+    "TV Special": 7,
+    "Special": 23,
+    "Music": 20,
+    "ONA": 3,
+    "CM": 3,
+    "PV": 1
+  },
+  "2000": {
+    "TV": 70,
+    "Movie": 43,
+    "OVA": 111,
+    "TV Special": 14,
+    "ONA": 6,
+    "Special": 19,
+    "Music": 24,
+    "CM": 2,
+    "PV": 1
+  },
+  "2001": {
+    "Movie": 49,
+    "TV": 103,
+    "OVA": 168,
+    "Special": 21,
+    "TV Special": 32,
+    "ONA": 10,
+    "Music": 27,
+    "CM": 3
+  },
+  "2002": {
+    "TV": 110,
+    "OVA": 140,
+    "Movie": 66,
+    "TV Special": 13,
+    "Special": 31,
+    "ONA": 9,
+    "Music": 37,
+    "CM": 2,
+    "PV": 2
+  },
+  "2003": {
+    "Movie": 53,
+    "TV": 118,
+    "TV Special": 12,
+    "OVA": 141,
+    "Special": 47,
+    "ONA": 12,
+    "Music": 39,
+    "CM": 2,
+    "PV": 1
+  },
+  "2004": {
+    "TV": 142,
+    "Movie": 60,
+    "OVA": 131,
+    "Special": 37,
+    "TV Special": 9,
+    "Music": 35,
+    "ONA": 13,
+    "CM": 2,
+    "PV": 2
+  },
+  "2005": {
+    "TV": 160,
+    "Special": 53,
+    "OVA": 117,
+    "Movie": 86,
+    "TV Special": 16,
+    "Music": 35,
+    "ONA": 24,
+    "CM": 3
+  },
+  "2006": {
+    "TV": 224,
+    "OVA": 115,
+    "TV Special": 22,
+    "Movie": 68,
+    "Special": 62,
+    "ONA": 26,
+    "Music": 34,
+    "CM": 2,
+    "PV": 1
+  },
+  "2007": {
+    "TV": 212,
+    "OVA": 111,
+    "Movie": 85,
+    "TV Special": 20,
+    "Special": 75,
+    "Music": 34,
+    "ONA": 24,
+    "CM": 4,
+    "PV": 1
+  },
+  "2008": {
+    "TV": 235,
+    "Movie": 68,
+    "Special": 92,
+    "OVA": 105,
+    "ONA": 30,
+    "Music": 50,
+    "TV Special": 8,
+    "CM": 7
+  },
+  "2009": {
+    "TV": 245,
+    "Movie": 109,
+    "OVA": 116,
+    "Special": 92,
+    "TV Special": 19,
+    "ONA": 52,
+    "Music": 60,
+    "PV": 1,
+    "CM": 5
+  },
+  "2010": {
+    "Movie": 119,
+    "TV": 257,
+    "Special": 95,
+    "OVA": 144,
+    "TV Special": 15,
+    "Music": 73,
+    "ONA": 51,
+    "PV": 7,
+    "CM": 9
+  },
+  "2011": {
+    "TV": 307,
+    "Movie": 135,
+    "OVA": 147,
+    "Special": 80,
+    "TV Special": 24,
+    "ONA": 83,
+    "Music": 105,
+    "PV": 5,
+    "CM": 14
+  },
+  "2012": {
+    "TV": 318,
+    "Movie": 124,
+    "OVA": 136,
+    "Special": 102,
+    "TV Special": 24,
+    "Music": 117,
+    "PV": 14,
+    "ONA": 99,
+    "CM": 31
+  },
+  "2013": {
+    "Movie": 137,
+    "TV": 318,
+    "TV Special": 23,
+    "OVA": 126,
+    "Special": 95,
+    "Music": 117,
+    "ONA": 125,
+    "PV": 11,
+    "CM": 20
+  },
+  "2014": {
+    "TV": 326,
+    "TV Special": 31,
+    "OVA": 142,
+    "Movie": 143,
+    "Special": 116,
+    "CM": 27,
+    "ONA": 173,
+    "Music": 116,
+    "PV": 13
+  },
+  "2015": {
+    "TV": 341,
+    "Movie": 169,
+    "OVA": 114,
+    "TV Special": 30,
+    "Special": 106,
+    "ONA": 173,
+    "Music": 114,
+    "PV": 13,
+    "CM": 26
+  },
+  "2016": {
+    "Movie": 184,
+    "TV": 375,
+    "OVA": 101,
+    "Music": 139,
+    "TV Special": 29,
+    "Special": 105,
+    "CM": 43,
+    "ONA": 231,
+    "PV": 16
+  },
+  "2017": {
+    "TV": 362,
+    "TV Special": 29,
+    "Movie": 194,
+    "Special": 70,
+    "OVA": 93,
+    "Music": 162,
+    "ONA": 287,
+    "CM": 40,
+    "PV": 12
+  },
+  "2018": {
+    "TV": 353,
+    "Movie": 173,
+    "ONA": 319,
+    "Special": 63,
+    "TV Special": 26,
+    "OVA": 73,
+    "PV": 15,
+    "Music": 157,
+    "CM": 34
+  },
+  "2019": {
+    "TV": 322,
+    "Movie": 185,
+    "ONA": 320,
+    "Music": 206,
+    "OVA": 62,
+    "Special": 52,
+    "TV Special": 30,
+    "PV": 22,
+    "CM": 29
+  },
+  "2020": {
+    "Movie": 113,
+    "TV": 302,
+    "ONA": 319,
+    "Music": 291,
+    "OVA": 66,
+    "Special": 38,
+    "PV": 14,
+    "TV Special": 16,
+    "CM": 28
+  },
+  "2021": {
+    "Movie": 138,
+    "TV": 244,
+    "ONA": 310,
+    "Special": 39,
+    "PV": 24,
+    "OVA": 54,
+    "Music": 351,
+    "TV Special": 30,
+    "CM": 28
+  },
+  "2022": {
+    "TV": 234,
+    "Music": 378,
+    "Movie": 129,
+    "ONA": 331,
+    "PV": 29,
+    "OVA": 55,
+    "TV Special": 34,
+    "Special": 32,
+    "CM": 28
+  },
+  "2023": {
+    "TV": 286,
+    "TV Special": 27,
+    "Music": 335,
+    "ONA": 353,
+    "Movie": 145,
+    "OVA": 48,
+    "PV": 21,
+    "Special": 19,
+    "CM": 26
+  },
+  "2024": {
+    "TV Special": 40,
+    "Movie": 133,
+    "TV": 287,
+    "ONA": 331,
+    "PV": 46,
+    "OVA": 48,
+    "Special": 13,
+    "Music": 307,
+    "CM": 38
+  }
+}

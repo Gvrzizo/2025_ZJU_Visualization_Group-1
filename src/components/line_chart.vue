@@ -27,9 +27,9 @@
               type="range" 
               v-model.number="startYear" 
               min="2000" 
-              max="2025" 
+              max="2024" 
               class="slider"
-              @input="updateCharts"
+              @input="updateLineCharts"
             >
             <span>{{ startYear }}</span>
           </div>
@@ -38,9 +38,9 @@
               type="range" 
               v-model.number="endYear" 
               min="2000" 
-              max="2025" 
+              max="2024" 
               class="slider"
-              @input="updateCharts"
+              @input="updateLineCharts"
             >
             <span>{{ endYear }}</span>
           </div>
@@ -83,6 +83,7 @@
         </div>
       </div>
     </div>
+
     <div class="controls">
         <div class="control-group">
           <h3>年份范围</h3>
@@ -92,9 +93,9 @@
                 type="range" 
                 v-model.number="choseYear" 
                 min="2000" 
-                max="2025" 
+                max="2024" 
                 class="slider"
-                @input="updatePieCharts"
+                @input="renderPieChart"
               >
               <span>{{ choseYear }}</span>
             </div>
@@ -108,6 +109,50 @@
         <div ref="pieChart" class="chart"></div>
       </div>
     </div>
+  
+
+    <div class="controls">
+        <div class="control-group">
+          <h3>年份范围</h3>
+          <div class="year-range">
+            <div class="slider-container">
+              <input 
+                type="range" 
+                v-model.number="barStartYear" 
+                min="1975" 
+                max="2024" 
+                class="slider"
+                @input="updateBarCharts"
+              >
+              <span>{{ barStartYear }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>年份范围</h3>
+          <div class="year-range">
+            <div class="slider-container">
+              <input 
+                type="range" 
+                v-model.number="barEndYear" 
+                min="1975" 
+                max="2024" 
+                class="slider"
+                @input="updateBarCharts"
+              >
+              <span>{{ barEndYear }}</span>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class = "charts-container">
+      <div class="chart-card">
+        <h2> {{barStartYear}} - {{barEndYear}}年份各影视类型占比图</h2>
+        <div ref="barChart" class="chart"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -116,6 +161,8 @@ import { ref, onMounted, watch } from 'vue';
 import * as echarts from 'echarts';
 import animeDataJson from '@/assets/data_line_2020+.json';
 import pieData from '@/assets/pie_data.json';
+import barData from '@/assets/type_bar.json'
+
 const genres = [
   'Supernatural', 'Fantasy', 'Drama', 
   'Adventure', 'Action', 'Romance', 'Comedy'
@@ -147,15 +194,20 @@ const genreColors = {
 const selectedGenres = ref([...genres]);
 const activeGenre = ref({});
 const startYear = ref(2000);
-const endYear = ref(2025);
+const endYear = ref(2024);
 const choseYear = ref(2000);
+const barStartYear = ref(2000);
+const barEndYear = ref(2024);
 
 const avgChart = ref(null);
 const countChart = ref(null);
 const pieChart = ref(null);
+const barChart = ref(null);
 let avgChartInstance = null;
 let countChartInstance = null;
 let pieChartInstance = null;
+let barChartInstance = null;
+const barTotalData = {};
 
 // 统计数据
 const highestScore = ref({ value: 0, genre: '', year: 0 });
@@ -218,6 +270,40 @@ const calculateStats = () => {
   popularGenre.value = { genre: popular, count: maxGenreCount };
 };
 
+const barSum = () => {
+  const baryears = (Object.keys(barData).map(Number).filter(year => year >= barStartYear.value && year <= barEndYear.value).sort((a,b) => a-b));
+
+  const all_type = new Set();
+  baryears.forEach(year => Object.keys(barData[year]).forEach(type=>all_type.add(type)));
+  const types = Array.from(all_type);
+
+  const sum_all = {};
+  baryears.forEach(year => {
+    sum_all[year] = 0;
+    Object.keys(barData[year]).forEach(type => sum_all[year] +=barData[year][type])
+  });
+  
+  const barSeries = types.map(type => {
+    return {
+      name:type,
+      type:'bar',
+      stack:'total',
+      emphasis: { focus: 'series' },
+      data:baryears.map(
+        year=>{
+          const value = barData[year][type] ||0;
+          return sum_all[year] > 0? (value/sum_all[year]*100) : 0;
+        }
+      ),
+    };
+  });
+
+  return {
+    baryears: baryears.map(String),
+    series: barSeries,
+    types,
+  }
+}
 watch(selectedGenres, () => {
   renderCharts();
 }, { deep: true });
@@ -549,6 +635,74 @@ const renderPieChart = () =>{
   pieChartInstance.setOption(pieOption);
 }
 
+const updateBarCharts = () =>{
+  if(barStartYear.value > barEndYear.value){
+    [barStartYear.value, barEndYear.value] = [barEndYear.value, barStartYear.value];
+  }
+  console.log(barStartYear);
+  console.log(barEndYear);
+  const{baryears, series, types} = barSum();
+  if(!baryears || !series || !types) return ;
+  if(barChartInstance){
+    barChartInstance.dispose();
+    barChartInstance = null;
+  }
+  barChartInstance = echarts.init(barChart.value);
+
+  const barOption = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function(params) {
+        let result = params[0].name + '<br/>';
+        params.forEach(param => {
+          const percent = Math.round(param.value * 10) / 10;
+          result += `${param.marker} ${param.seriesName}: ${percent}%<br/>`;
+        });
+        return result;
+      }
+    },
+    legend: {
+      data: types,
+      bottom: 10,
+      type: 'scroll',
+      pageIconColor: '#2f4554'
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '15%',
+      top: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: baryears,
+      axisLabel: {
+        interval: 0,
+        rotate: baryears.length > 15 ? 45 : 0
+      }
+    },
+    yAxis: {
+      type: 'value',
+      name: '百分比',
+      axisLabel: {
+        formatter: '{value}%'
+      },
+      max: 100
+    },
+    series: series.map(s => ({
+      ...s,
+      label: {
+        show: false,
+        formatter: ({ value }) => `${Math.round(value * 10) / 10}%`
+      }
+    }))
+  };
+
+  barChartInstance.setOption(barOption);
+}
+
 genres.forEach(genre=>{
   activeGenre.value[genre] = false;
 })
@@ -582,7 +736,7 @@ const getGenreStyle = (genre) => {
 }
 
 // 更新图表
-const updateCharts = () => {
+const updateLineCharts = () => {
   if (startYear.value > endYear.value) {
     [startYear.value, endYear.value] = [endYear.value, startYear.value];
   }
@@ -594,23 +748,23 @@ watch(selectedGenres, () => {
   renderCharts();
 }, { deep: true });
 
-const updatePieCharts = () =>{
-  renderPieChart();
-}
-
 // 需要添加对choseYear的监听
 watch(choseYear, () => {
   renderPieChart();
 });
 
+watch([barStartYear, barEndYear], updateBarCharts);
+
 onMounted(() => {
   calculateStats(); // 初始化时直接计算统计
   renderCharts(); 
   renderPieChart();
+  updateBarCharts();
   window.addEventListener('resize', () => {
     avgChartInstance?.resize();
     countChartInstance?.resize();
     pieChartInstance?.resize();
+    barChartInstance?.resize();
   });
 });
 
